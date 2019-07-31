@@ -1,0 +1,92 @@
+import hashlib
+import base64
+import requests
+import pickle
+
+
+class GsDataAPI:
+    def __init__(self):
+        self.app_key = 'b523947e120c8ee8a88cb278527ddb5a'
+        self.app_secret = '1962972fee15606cd1ad1dc8080bb289'
+        self.sort_map = {'1': 'posttime', '2': 'readnum', '3': 'likenum'}
+        self.order_map = {'1': 'desc', '2': 'asc'}
+
+    def gen_access_token(self, params, router):
+        params_list = sorted(params.items(), key=lambda x: x[0])
+        params_str = ''.join([''.join(params) for params in params_list])
+        params_final = '%s_%s_%s' % (self.app_secret, params_str, self.app_secret)
+        m = hashlib.md5()
+        m.update(params_final.encode('utf-8'))
+        sign = m.hexdigest()
+        C = base64.b64encode(bytes(self.app_key+':'+sign+':'+router, encoding='utf-8'))
+        return C
+
+    def get_msg_info(self, **kwargs):
+        '''
+        参数	        类型	可空	默认	    描述	        示例
+        wx_name	        String  YES	    ---	        微信号	        rmrbwx
+        posttime_start	String	YES	    ---	        文章发布开始时间	2018-08-20 10:00:00
+        posttime_end	String	YES	    ---	        文章发布结束时间	2018-09-07 06:00:00（不含）
+        entertime_start	String	YES	    ---	        文章入库开始时间	2018-08-08 12:00:00
+        entertime_end	String	YES	    ---	        文章入库结束时间	2018-08-20 22:00:00（不含）
+        keywords	    String	YES	    ---	        检索词	        aaa+bbb,ccc,ddd+eee
+        order	        String	YES	    desc	    排序方式	    desc
+        sort	        String	YES	    posttime	排序字段	    posttime
+        page	        Integer	YES	    1	        第几页	        1
+        limit	        Integer	YES	    50	        每页显示条数	    20
+        sn	            String	YES	    --	        sn	            aabbcc
+        '''
+        kwargs['limit'] = str(kwargs.get('limit', 50))
+        if kwargs.get('posttime_start') is not None:
+            kwargs['posttime_start'] += ' 00:00:00'
+        if kwargs.get('posttime_end') is not None:
+            kwargs['posttime_end'] += ' 24:00:00'
+
+        sort_type = kwargs.get('sort')
+        if sort_type in [None, 'posttime']:
+            router = '/weixin/article/search1'
+        elif sort_type == 'readnum':
+            router = '/weixin/article/search2'
+        elif sort_type == 'likenum':
+            router = '/weixin/article/search3'
+        else:
+            return None
+
+        params = kwargs
+        news_list = []
+        while True:
+            url = 'http://databus.gsdata.cn:8888/api/service'
+            C = self.gen_access_token(params, router)
+            r = requests.get(url, headers={'access-token': C}, params=params)
+            r_js = r.json()
+            if not r_js['success']:
+                print(r_js)
+            data = r_js['data']
+            num_found = data['numFound']
+            pagination = data['pagination']
+            page = pagination['page']
+            if page == 1:
+                print('总计%d篇文章' % num_found)
+            news_list.extend(data['newsList'])
+            news_list_len = len(news_list)
+            print('已获取%d篇' % (news_list_len))
+            if news_list_len >= num_found:
+                break
+            params['page'] = str(page + 1)
+
+        with open('news_list.pkl', 'wb') as f:
+            pickle.dump(news_list, f)
+        return news_list
+
+
+if __name__ == '__main__':
+    # api = GsDataAPI()
+    # news_list = api.get_msg_info(wx_name='chaping321', posttime_start='2019-07-15', posttime_end='2019-07-28')
+    # news_list = api.get_msg_info(wx_name='chaping321')
+
+    with open('news_list.pkl', 'rb') as f:
+        news_list = pickle.load(f)
+    with open('news_list.txt', 'w', encoding='utf-8') as f:
+        for news in news_list:
+            f.write('%s\n' % news['news_title'])
+            f.write('%s\n\n' % news['news_url'])
