@@ -2,6 +2,7 @@ import hashlib
 import base64
 import requests
 import pickle
+import xlwt
 
 
 class GsDataAPI:
@@ -11,7 +12,9 @@ class GsDataAPI:
         self.sort_map = {'1': 'posttime', '2': 'readnum', '3': 'likenum'}
         self.order_map = {'1': 'desc', '2': 'asc'}
 
-    def gen_access_token(self, params, router):
+        self.news_list = []
+
+    def _gen_access_token(self, params, router):
         params_list = sorted(params.items(), key=lambda x: x[0])
         params_str = ''.join([''.join(params) for params in params_list])
         params_final = '%s_%s_%s' % (self.app_secret, params_str, self.app_secret)
@@ -53,10 +56,9 @@ class GsDataAPI:
             return None
 
         params = kwargs
-        news_list = []
         while True:
             url = 'http://databus.gsdata.cn:8888/api/service'
-            C = self.gen_access_token(params, router)
+            C = self._gen_access_token(params, router)
             r = requests.get(url, headers={'access-token': C}, params=params)
             r_js = r.json()
             if not r_js['success']:
@@ -67,26 +69,46 @@ class GsDataAPI:
             page = pagination['page']
             if page == 1:
                 print('总计%d篇文章' % num_found)
-            news_list.extend(data['newsList'])
-            news_list_len = len(news_list)
+            self.news_list.extend(data['newsList'])
+            news_list_len = len(self.news_list)
             print('已获取%d篇' % (news_list_len))
             if news_list_len >= num_found:
                 break
             params['page'] = str(page + 1)
 
         with open('news_list.pkl', 'wb') as f:
-            pickle.dump(news_list, f)
-        return news_list
+            pickle.dump(self.news_list, f)
+
+    def save_as_excel(self, filename):
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet('Sheet0')
+        header = ['标题', '摘要', '发布时间', '作者', '阅读数', '点赞数', '链接']
+        for i, field in enumerate(header):
+            ws.write(0, i, field)
+        col_width = [10000, 10000, 5000, 5000, 5000, 5000, 20000]
+        col_count = len(col_width)
+        for i in range(col_count):
+            ws.col(i).width = col_width[i]
+
+        row = 1
+        for news in self.news_list:
+            ws.write(row, 0, news['news_title'])
+            ws.write(row, 1, news['news_digest'])
+            ws.write(row, 2, news['news_posttime'])
+            ws.write(row, 3, news['news_author'])
+            ws.write(row, 4, news['news_read_count'])
+            ws.write(row, 5, news['news_like_count'])
+            ws.write(row, 6, news['news_url'])
+            row += 1
+
+        wb.save(filename)
 
 
 if __name__ == '__main__':
-    # api = GsDataAPI()
+    api = GsDataAPI()
     # news_list = api.get_msg_info(wx_name='chaping321', posttime_start='2019-07-15', posttime_end='2019-07-28')
     # news_list = api.get_msg_info(wx_name='chaping321')
 
     with open('news_list.pkl', 'rb') as f:
-        news_list = pickle.load(f)
-    with open('news_list.txt', 'w', encoding='utf-8') as f:
-        for news in news_list:
-            f.write('%s\n' % news['news_title'])
-            f.write('%s\n\n' % news['news_url'])
+        api.news_list = pickle.load(f)
+    api.save_as_excel('news_list.xls')
