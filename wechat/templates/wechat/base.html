@@ -12,8 +12,8 @@
     <title>{{ title }}</title>
 </head>
 <body>
-<nav class="navbar navbar-light bg-light">
-    <span class="navbar-brand mb-0 h1">Navbar</span>
+<nav class="navbar navbar-dark bg-dark">
+    <span class="navbar-brand mb-0 h1">微信公众号文章数据</span>
 </nav>
 <div class="container">
     {% block container %}
@@ -29,6 +29,8 @@
 <script src="{% static 'wechat/js/bootstrap-datetimepicker.min.js' %}"></script>
 <!--国际化：使用中文 -->
 <script src="{% static 'wechat/js/bootstrap-datetimepicker.zh-CN.js' %}" charset="UTF-8"></script>
+
+<script src="{% static 'wechat/js/wechat.js' %}" charset="UTF-8"></script>
 
 <script>
 $(".datetime").datetimepicker({

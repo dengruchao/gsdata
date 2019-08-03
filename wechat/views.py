@@ -2,10 +2,18 @@ from django.shortcuts import render
 from django.http import HttpResponse, StreamingHttpResponse
 
 # Create your views here.
-from .forms import SearchForm
+from .forms import SearchForm, LoginForm
 import api
 
 gsdata_api = api.GsDataAPI()
+
+
+def login(request):
+    print(request.POST)
+    form = LoginForm(request.POST)
+    if form.is_valid():
+        print(form.cleaned_data)
+    return form.cleaned_data
 
 
 def msg_search(request):
@@ -43,8 +51,10 @@ def export_excel(request):
 
 def index(request):
     form = SearchForm()
+    login_form = LoginForm()
     context = {
         'title': '微信公众号历史文章',
         'form': form,
+        'login_form': login_form,
     }
     return render(request, 'wechat/index.html', context=context)
