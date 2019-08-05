@@ -66,22 +66,22 @@
 
   <div class="col-md-4 mt-2">
     <div class="h-100 w-100 d-inline-block bg-light">
-    <form action="{% url 'wechat:login' %}" method="post", role="form", class="mt-5 ml-2 mr-2" id="login_form">
-      {% csrf_token %}
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="{{ login_form.account.id_for_label }}">账号</span>
+      <form action="{% url 'wechat:login' %}" method="post", role="form", class="mt-5 ml-2 mr-2" id="loginForm">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="{{ loginForm.username.id_for_label }}">账号</span>
+          </div>
+          {{ loginForm.username }}
         </div>
-        {{ login_form.account }}
-      </div>
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="{{ login_form.password.id_for_label }}">密码</span>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="{{ loginForm.password.id_for_label }}">密码</span>
+          </div>
+          {{ loginForm.password }}
         </div>
-        {{ login_form.password }}
-      </div>
-      <input type="button" class="btn btn-success btn-block" onclick="login()">登录</input>
-    </form>
+        <button type="submit" class="btn btn-success btn-block">登录</button>
+      </form>
     </div>
   </div>
 

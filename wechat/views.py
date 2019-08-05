@@ -1,19 +1,38 @@
 from django.shortcuts import render
 from django.http import HttpResponse, StreamingHttpResponse
+from django.http.response import JsonResponse
 
 # Create your views here.
 from .forms import SearchForm, LoginForm
+from .models import User
 import api
 
 gsdata_api = api.GsDataAPI()
 
 
 def login(request):
-    print(request.POST)
     form = LoginForm(request.POST)
     if form.is_valid():
-        print(form.cleaned_data)
-    return form.cleaned_data
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        error_code = -1
+        try:
+            user = User.objects.get(username=username)
+            if user.password == password:
+                message = '登录成功'
+                error_code = 0
+            else:
+                message = '密码错误'
+                error_code = 1
+        except:
+            message = '用户不存在'
+            error_code = 2
+
+        login_return = {
+            'error_code': error_code,
+            'msg': message
+        }
+    return JsonResponse(login_return, safe=False)
 
 
 def msg_search(request):
@@ -55,6 +74,6 @@ def index(request):
     context = {
         'title': '微信公众号历史文章',
         'form': form,
-        'login_form': login_form,
+        'loginForm': login_form,
     }
     return render(request, 'wechat/index.html', context=context)
