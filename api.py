@@ -56,6 +56,7 @@ class GsDataAPI:
             return None
 
         params = kwargs
+        self.news_list = []
         while True:
             url = 'http://databus.gsdata.cn:8888/api/service'
             C = self._gen_access_token(params, router)

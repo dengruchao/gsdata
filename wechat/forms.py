@@ -13,8 +13,3 @@ class SearchForm(forms.Form):
     sort = forms.ChoiceField(label='排序字段', choices=((1, '发布日期'), (2, '阅读数'), (3, '点赞数')), initial=1,
                              widget=forms.Select(attrs={'class': 'form-control'}))
 
-
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(max_length=100, required=True, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-

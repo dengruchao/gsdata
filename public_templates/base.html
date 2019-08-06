@@ -2,22 +2,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="{% static 'wechat/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="{% static 'css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
 
-    <title>{{ title }}</title>
+  <title>{{ title }}</title>
 </head>
 <body>
-<nav class="navbar navbar-dark bg-dark">
-    <span class="navbar-brand mb-0 h1">微信公众号文章数据</span>
-</nav>
+{% block navbar %}
+{% endblock navbar %}
 <div class="container">
-    {% block container %}
-    {% endblock container %}
+  {% block container %}
+  {% endblock container %}
 </div> <!-- /container -->
 
 <!-- Optional JavaScript -->
@@ -27,13 +26,14 @@
 <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-<script src="{% static 'wechat/js/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
 <!--国际化：使用中文 -->
-<script src="{% static 'wechat/js/bootstrap-datetimepicker.zh-CN.js' %}" charset="UTF-8"></script>
+<script src="{% static 'js/bootstrap-datetimepicker.zh-CN.js' %}" charset="UTF-8"></script>
 
-<script src="{% static 'wechat/js/jquery.form.js' %}" charset="UTF-8"></script>
+<script src="{% static 'js/jquery.form.js' %}" charset="UTF-8"></script>
+<script src="{% static 'login/js/login.js' %}" charset="UTF-8"></script>
+
 <script src="{% static 'wechat/js/wechat.js' %}" charset="UTF-8"></script>
-<script src="{% static 'wechat/js/layer.js' %}" charset="UTF-8"></script>
 
 <script>
 $(".datetime").datetimepicker({

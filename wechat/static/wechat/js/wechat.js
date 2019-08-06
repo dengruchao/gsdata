@@ -1,12 +1,10 @@
 $(document).ready(function() {
     var options = {
-        //target: '#output2',
         success: function(data) {
-            if(data.error_code == 2) {
-            }
+            $('#id_times').html(data.times);
         }
     };
-    $('#loginForm').on('submit', function(e) {
+    $('#searchForm').on('submit', function(e) {
         e.preventDefault(); // <-- important
         $(this).ajaxSubmit(options);
     });
