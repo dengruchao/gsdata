@@ -1,5 +1,81 @@
-{% extends 'wechat/base.html' %}
+{% for news in newsList %}
+<div class="news">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="row ml-0">
+        <h4>
+          <span class="badge badge-success"><small>{{ news.news_is_origin }}</small></span>
+          <a href="{{ news.news_url }}" target="_blank" class="text-primary"><small>{{ news.news_title }}</small></a>
+        </h4>
+      </div>
+      <div class="row ml-0">
+        <p class="text-secondary">{{ news.news_digest }}</p>
+      </div>
+      <div class="row ml-0">
+        <p class="text-muted">{{ news.wx_nickname }}-{{ news.news_author }} {{ news.news_posttime }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <img src="{{ news.news_img }}" class="float-left">
+    </div>
+  </div>
+</div>
+<hr class="mt-0 mb-2">
+{% empty %}
+<div class="news ml-2">
+  暂无数据
+</div>
+{% endfor %}
 
-{% block container %}
-<a class="btn btn-outline-primary" href="{% url 'wechat:export_excel' %}" role="button">导出excel</a>
-{% endblock container %}
+{% if paginatorData.is_paginated %}
+<nav class="mt-3" aria-label="Page navigation">
+  <ul class="pagination">
+    {% if newsList.number == 1 %}
+    <li class="page-item disabled">
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:-1 }});">Previous</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:-1 }});">Previous</a>
+    </li>
+    {% endif %}
+    {% if paginatorData.first %}
+    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result(1);">1</a></li>
+    {% endif %}
+    {% if paginatorData.left %}
+    {% if paginatorData.left_has_more %}
+    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+    {% endif %}
+    {% for i in paginatorData.left %}
+    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ i }});">{{ i }}</a></li>
+    {% endfor %}
+    {% endif %}
+    <li class="page-item active">
+      <span class="page-link">
+        {{ newsList.number }}
+        <span class="sr-only">(current)</span>
+      </span>
+    </li>
+    {% if paginatorData.right %}
+    {% for i in paginatorData.right %}
+    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ i }});">{{ i }}</a></li>
+    {% endfor %}
+    {% if paginatorData.right_has_more %}
+    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+    {% endif %}
+    {% endif %}
+    {% if paginatorData.last %}
+    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ paginatorData.num_pages }});">{{ paginatorData.num_pages }}</a></li>
+    {% endif %}
+    {% if newsList.number == paginatorData.num_pages %}
+    <li class="page-item disabled">
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:1 }});">Next</a>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:1 }});">Next</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

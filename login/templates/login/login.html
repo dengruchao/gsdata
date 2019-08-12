@@ -1,10 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+  body {
+    height: 100%;
+    background-image: url('../../static/login/images/bg.jpg');
+  }
+</style>
+{% endblock css %}
 
 {% block container %}
-<div class="row">
-  <div class="col-md-12">
-    <form action="{% url 'login:login' %}" method="post", role="form", class="mt-5 ml-2 mr-2" id="loginForm">
+
+<div class="row justify-content-center align-items-center" style="height:70vh">
+  <div class="col-md-6 col-sm-12 bg-light mt-5">
+    <form action="{% url 'login:login' %}" method="post", role="form", class="mt-4 ml-2 mr-2 mb-5" id="loginForm">
       {% csrf_token %}
+      <h3 class="text-center">欢迎登录</h3>
       <div class="input-group mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="{{ loginForm.username.id_for_label }}">账号</span>
@@ -39,3 +51,7 @@
   </div>
 </div>
 {% endblock container %}
+
+{% block js %}
+<script src="{% static 'login/js/login.js' %}" charset="UTF-8"></script>
+{% endblock js %}
