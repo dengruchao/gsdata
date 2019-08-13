@@ -23,7 +23,7 @@ def search(request):
             params['posttime_end'] = posttime_range[1].strip()
         print(params)
         # gsdata_api.get_msg_info(**params)
-        with open('news_list.pkl', 'rb') as f:
+        with open('test.pkl', 'rb') as f:
             gsdata_api.news_list = pickle.load(f)
         news_list_len = len(gsdata_api.news_list)
         for i in range(news_list_len):
