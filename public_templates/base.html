@@ -16,6 +16,26 @@
   <title>{{ title }}</title>
 </head>
 <body>
+
+<!-- Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loadingModalLongTitle">请稍后...</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <img src="{% static 'images/loading.gif' %}" style="width: 100px;height: 100px;" class="rounded" alt="...">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% block navbar %}
 {% endblock navbar %}
 <div class="container">

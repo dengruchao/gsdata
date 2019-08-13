@@ -1,10 +1,11 @@
 $(document).ready(function() {
     var options = {
+        beforeSend: function(data) {
+            $("#loadingModal").modal({backdrop: 'static', keyboard: false});
+        },
         success: function(data) {
+            $("#loadingModal").modal('hide');
             $('#id_times').html(data.times);
-            //$.get("/wechat/result?page=1",function(data,status){
-            //    $('#newsList').html(data);
-            //});
             get_result(1);
         }
     };

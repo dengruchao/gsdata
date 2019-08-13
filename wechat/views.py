@@ -7,6 +7,7 @@ from .forms import SearchForm
 from login.models import User
 import api
 import pickle
+import time
 
 gsdata_api = api.GsDataAPI()
 
@@ -25,6 +26,7 @@ def search(request):
         # gsdata_api.get_msg_info(**params)
         with open('test.pkl', 'rb') as f:
             gsdata_api.news_list = pickle.load(f)
+        time.sleep(0.5)
         news_list_len = len(gsdata_api.news_list)
         for i in range(news_list_len):
             gsdata_api.news_list[i]['news_img'] = 'http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=' +\
