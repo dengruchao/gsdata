@@ -36,24 +36,19 @@ def search(request):
 
 
 def sort_result(request):
-    news_list = gsdata_api.news_list
-    print(request.GET)
     by = request.GET.get('by', '+posttime')
     if by[0] == '-':
         reverse = False
     else:
         reverse = True
-    print(by)
-    news_list.sort(key=lambda x: x['news_%s'%by[1:]], reverse=reverse)
+    gsdata_api.news_list.sort(key=lambda x: x['news_%s'%by[1:]], reverse=reverse)
     return JsonResponse({'success': True})
 
 
 def result(request):
-    news_list = gsdata_api.news_list
-    # print(news_list)
-    news_num = len(news_list)
-    page_num = 2
-    paginator = Paginator(news_list, page_num)
+    news_num = len(gsdata_api.news_list)
+    page_num = 10
+    paginator = Paginator(gsdata_api.news_list, page_num)
     page = request.GET.get('page', '0')
     try:
         news_list = paginator.page(page)
@@ -111,11 +106,12 @@ def result(request):
             'first': first,
             'last': last,
             'num_pages': total_pages,
+            'current_page': news_list.number,
         }
 
     context = {
         'newsList': news_list,
-        'paginatorData': paginator_data,
+        'pg': paginator_data,
     }
 
     return render(request, 'wechat/result.html', context=context)

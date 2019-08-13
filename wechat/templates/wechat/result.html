@@ -27,53 +27,53 @@
 </div>
 {% endfor %}
 
-{% if paginatorData.is_paginated %}
+{% if pg.is_paginated %}
 <nav class="mt-3" aria-label="Page navigation">
   <ul class="pagination">
-    {% if newsList.number == 1 %}
+    {% if pg.current_page == 1 %}
     <li class="page-item disabled">
-      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:-1 }});">Previous</a>
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ pg.current_page|add:-1 }});">上一页</a>
     </li>
     {% else %}
     <li class="page-item">
-      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:-1 }});">Previous</a>
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ pg.current_page|add:-1 }});">上一页</a>
     </li>
     {% endif %}
-    {% if paginatorData.first %}
+    {% if pg.first %}
     <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result(1);">1</a></li>
     {% endif %}
-    {% if paginatorData.left %}
-    {% if paginatorData.left_has_more %}
+    {% if pg.left %}
+    {% if pg.left_has_more %}
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
-    {% for i in paginatorData.left %}
+    {% for i in pg.left %}
     <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ i }});">{{ i }}</a></li>
     {% endfor %}
     {% endif %}
     <li class="page-item active">
       <span class="page-link">
-        {{ newsList.number }}
+        {{ pg.current_page }}
         <span class="sr-only">(current)</span>
       </span>
     </li>
-    {% if paginatorData.right %}
-    {% for i in paginatorData.right %}
+    {% if pg.right %}
+    {% for i in pg.right %}
     <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ i }});">{{ i }}</a></li>
     {% endfor %}
-    {% if paginatorData.right_has_more %}
+    {% if pg.right_has_more %}
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
     {% endif %}
-    {% if paginatorData.last %}
-    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ paginatorData.num_pages }});">{{ paginatorData.num_pages }}</a></li>
+    {% if pg.last %}
+    <li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="get_result({{ pg.num_pages }});">{{ pg.num_pages }}</a></li>
     {% endif %}
-    {% if newsList.number == paginatorData.num_pages %}
+    {% if pg.current_page == pg.num_pages %}
     <li class="page-item disabled">
-      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:1 }});">Next</a>
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ pg.current_page|add:1 }});">下一页</a>
     </li>
     {% else %}
     <li class="page-item">
-      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ newsList.number|add:1 }});">Next</a>
+      <a class="page-link" href="javascript:void(0);" onclick="get_result({{ pg.current_page|add:1 }});">下一页</a>
     </li>
     {% endif %}
   </ul>
