@@ -41,7 +41,10 @@ def sort_result(request):
         reverse = False
     else:
         reverse = True
-    gsdata_api.news_list.sort(key=lambda x: x['news_%s'%by[1:]], reverse=reverse)
+    if by[1:] == 'posttime':
+        gsdata_api.news_list.sort(key=lambda x: x['news_%s'%by[1:]], reverse=reverse)
+    else:
+        gsdata_api.news_list.sort(key=lambda x: int(x['news_%s'%by[1:]]), reverse=reverse)
     return JsonResponse({'success': True})
 
 

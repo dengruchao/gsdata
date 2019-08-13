@@ -4,7 +4,7 @@
 {% block css %}
 <link href="{% static 'css/daterangepicker.css' %}" rel="stylesheet">
 <style>
-  .news img {
+  .news_img {
     height: 120px;
     width:  200px;
   }
@@ -72,16 +72,16 @@
 
       <div class="row ml-0">
         <div class="dropdown">
-          <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button class="btn btn-link dropdown-toggle" type="button" id="sortDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             发布日期由近到远
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#" onclick="sort_result('+posttime');">发布日期由近到远</a>
-            <a class="dropdown-item" href="#" onclick="sort_result('-posttime');">发布日期由远到近</a>
-            <a class="dropdown-item" href="#" onclick="sort_result('+read_count');">阅读数由高到低</a>
-            <a class="dropdown-item" href="#" onclick="sort_result('-read_count');">阅读数由低到高</a>
-            <a class="dropdown-item" href="#" onclick="sort_result('+like_count');">点赞数由高到低</a>
-            <a class="dropdown-item" href="#" onclick="sort_result('-like_count');">点赞数由低到高</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '+posttime');">发布日期由近到远</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '-posttime');">发布日期由远到近</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '+read_count');">阅读数由高到低</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '-read_count');">阅读数由低到高</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '+like_count');">点赞数由高到低</a>
+            <a class="dropdown-item" href="javascript:void(0);" onclick="sort_result(this, '-like_count');">点赞数由低到高</a>
           </div>
         </div>
         <a class="btn btn-link" href="{% url 'wechat:download' %}" role="button">下载到本地</a>

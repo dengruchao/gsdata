@@ -20,7 +20,8 @@ function get_result(page) {
     });
 }
 
-function sort_result(by) {
+function sort_result(obj, by) {
+    $('#sortDropdownMenu').text(obj.text);
     $.get("/wechat/sort_result?by="+by,function(data,status){
         get_result(1);
     });
