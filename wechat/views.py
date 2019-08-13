@@ -27,10 +27,10 @@ def search(request):
         with open('test.pkl', 'rb') as f:
             gsdata_api.news_list = pickle.load(f)
         time.sleep(0.5)
-        news_list_len = len(gsdata_api.news_list)
-        for i in range(news_list_len):
-            gsdata_api.news_list[i]['news_img'] = 'http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=' +\
-                                                  gsdata_api.news_list[i]['news_imgs'].split(';')[0]
+        # news_list_len = len(gsdata_api.news_list)
+        # for i in range(news_list_len):
+        #     gsdata_api.news_list[i]['news_img'] = 'http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=' +\
+        #                                           gsdata_api.news_list[i]['news_imgs'].split(';')[0]
         user = User.objects.get(pk=request.session.get('user_id'))
         user.times -= (len(gsdata_api.news_list)//params.get('limit') + 1)
         user.save()
