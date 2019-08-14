@@ -15,7 +15,7 @@ gsdata_api = api.GsDataAPI()
 def search(request):
     if request.method == 'POST':
         form = SearchForm(request.POST)
-        params = {}
+        params = dict()
         params['wx_name'] = form.data.get('wx_name')
         params['limit'] = 50
         if form.data.get('posttime_range'):
@@ -23,11 +23,14 @@ def search(request):
             params['posttime_start'] = posttime_range[0].strip()
             params['posttime_end'] = posttime_range[1].strip()
         print(params)
-        # gsdata_api.get_msg_info(**params)
-        with open('test.pkl', 'rb') as f:
-            gsdata_api.news_list = pickle.load(f)
-        time.sleep(0.5)
+        if request.session.get('user_name') == 'test':
+            with open('test.pkl', 'rb') as f:
+                gsdata_api.news_list = pickle.load(f)
+            time.sleep(0.5)
+        else:
+            gsdata_api.get_msg_info(**params)
         # news_list_len = len(gsdata_api.news_list)
+        # 防盗链
         # for i in range(news_list_len):
         #     gsdata_api.news_list[i]['news_img'] = 'http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=' +\
         #                                           gsdata_api.news_list[i]['news_imgs'].split(';')[0]
@@ -123,7 +126,7 @@ def result(request):
 
 
 def download(request):
-    filename = 'test.xls'
+    filename = request.session.get('user_name') + '.xls'
     gsdata_api.save_as_excel(filename)
 
     def file_iterator(file_name):

@@ -77,8 +77,8 @@ class GsDataAPI:
                 break
             params['page'] = str(page + 1)
 
-        with open('test.pkl', 'wb') as f:
-            pickle.dump(self.news_list, f)
+        # with open('test.pkl', 'wb') as f:
+        #     pickle.dump(self.news_list, f)
 
     def save_as_excel(self, filename):
         wb = xlwt.Workbook()
