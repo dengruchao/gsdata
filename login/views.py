@@ -16,7 +16,7 @@ def index(request):
     form = SearchForm()
     user = User.objects.get(pk=request.session.get('user_id'))
     context = {
-        'title': '小超数据-专业的媒体数据采集平台',
+        'title': '小超数据',
         'form': form,
         'user_info': {'username': user.username, 'times': user.times},
     }
@@ -28,7 +28,7 @@ def login_page(request):
         return redirect('/')
     login_form = LoginForm()
     context = {
-        'title': '小超数据登录-专业的媒体数据采集平台',
+        'title': '小超数据-登录',
         'loginForm': login_form,
     }
     return render(request, 'login/login.html', context=context)
