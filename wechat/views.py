@@ -10,6 +10,7 @@ import pickle
 import time
 
 gsdata_api = api.GsDataAPI()
+sort_by = '+posttime'
 
 
 def search(request):
@@ -40,8 +41,7 @@ def search(request):
         return JsonResponse({'times': user.times})
 
 
-def sort_result(request):
-    by = request.GET.get('by', '+posttime')
+def sort_result_internal(by):
     if by[0] == '-':
         reverse = False
     else:
@@ -50,14 +50,23 @@ def sort_result(request):
         gsdata_api.news_list.sort(key=lambda x: x['news_%s'%by[1:]], reverse=reverse)
     else:
         gsdata_api.news_list.sort(key=lambda x: int(x['news_%s'%by[1:]]), reverse=reverse)
+
+
+def sort_result(request):
+    global sort_by
+    by = request.GET.get('by', '+posttime')
+    sort_result_internal(by)
+    sort_by = by
     return JsonResponse({'success': True})
 
 
 def result(request):
+    page = request.GET.get('page', '1')
+    if int(page) == 1:
+        sort_result_internal(sort_by)
     news_num = len(gsdata_api.news_list)
     page_num = 10
     paginator = Paginator(gsdata_api.news_list, page_num)
-    page = request.GET.get('page', '0')
     try:
         news_list = paginator.page(page)
     except PageNotAnInteger:

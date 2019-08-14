@@ -3,6 +3,7 @@ import base64
 import requests
 import pickle
 import xlwt
+import os
 
 
 class GsDataAPI:
@@ -105,11 +106,46 @@ class GsDataAPI:
         wb.save(filename)
 
 
-if __name__ == '__main__':
-    api = GsDataAPI()
-    # news_list = api.get_msg_info(wx_name='chaping321', posttime_start='2019-07-15', posttime_end='2019-07-28')
-    # news_list = api.get_msg_info(wx_name='chaping321')
+class IDataApi:
+    def __init__(self):
+        self.api_key = 'vYpznyAwychvW7ur6HMbUx08YgO81ZX2eFpLytUGRTHeitTSUIONsZLpps3O18aY'
+        self.data_json = None
 
-    with open('news_list.pkl', 'rb') as f:
-        api.news_list = pickle.load(f)
-    api.save_as_excel('news_list.xls')
+    def get_msg_info(self, **kwargs):
+        url = "http://api01.idataapi.cn:8000/post/weixin?apikey=%s" % self.api_key
+        params = kwargs
+        headers = {
+            "Accept-Encoding": "gzip",
+            "Connection": "close"
+        }
+
+        if not os.path.exists('idata.pkl'):
+            r = requests.get(url, headers=headers, params=params)
+            self.data_json = r.json()
+            if self.data_json['retcode'] == '000000':
+                with open('idata.pkl', 'wb') as f:
+                    pickle.dump(r.json(), f)
+            else:
+                print(self.data_json['message'])
+                return
+        else:
+            with open('idata.pkl', 'rb') as f:
+                self.data_json = pickle.load(f)
+
+        data_list = self.data_json['data']
+        has_next = self.data_json['hasNext']
+        page_token = self.data_json['pageToken']
+        print(has_next)
+        print(page_token)
+        for data in data_list:
+            print(data['title'])
+            print(data['url'])
+            print('')
+
+
+if __name__ == '__main__':
+    # api = GsDataAPI()
+    # news_list = api.get_msg_info(wx_name='chaping321', posttime_start='2019-07-15', posttime_end='2019-07-28')
+
+    idata_api = IDataApi()
+    idata_api.get_msg_info(uid='chaping321', searchMode='top', beginDate='2018-03-01', endDate='2019-08-14')
