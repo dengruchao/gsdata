@@ -4,6 +4,9 @@ import requests
 import pickle
 import xlwt
 import os
+import re
+import json
+import random
 
 
 class GsDataAPI:
@@ -137,15 +140,117 @@ class IDataApi:
         page_token = self.data_json['pageToken']
         print(has_next)
         print(page_token)
+        print(len(data_list))
         for data in data_list:
             print(data['title'])
             print(data['url'])
             print('')
 
 
+class WechatAPI:
+    def __init__(self):
+        self.url = 'https://mp.weixin.qq.com/mp/profile_ext'
+        self.headers = {
+            'Host': 'mp.weixin.qq.com',
+            'Connection': 'keep-alive',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/3.53.1159.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 MicroMessenger/6.5.2.501 NetType/WIFI WindowsWechat',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': '*/*',
+            'Referer': 'https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA5NDc1NzQ4MA==&scene=124&uin=MTMxOTI3Mjc1&key=18296be7e87fa916d06e197d2c416373765f9d9507fb1be1ca58b7278b74ab20427f8abc1b76922d43a42c46fe052bc4e7e6cd1a8e8613615ef660c888a2fb12f463a593d439a46d1a7360fa075108b4&devicetype=Windows+7&version=62060833&lang=zh_CN&a8scene=7&pass_ticket=P12nGbyGYqcxMn8TPtsskVbRJo%2BH9Rojj4I0SNfyL9I%3D&winzoom=1',
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
+            'Cookie': 'rewardsn=; wxtokenkey=777; wxuin=131927275; devicetype=Windows7; version=62060833; lang=zh_CN; pass_ticket=P12nGbyGYqcxMn8TPtsskVbRJo+H9Rojj4I0SNfyL9I=; wap_sid2=COuZ9D4SXGhFWm10djluQ2NCT0d5SHIwMDB1RzBzZ09MNXhnUzhQanBndFB6TDdfTlNzajU1enllMG91cnBvV29FVkxUbXZxVG9janhtcmxZNUNUMTRGRnlCN2dfNERBQUF+MN6i2OoFOA1AlU4=',
+        }
+        with open('cookie.txt', 'r') as f:
+            cookie = f.read()
+        self.cookies = json.loads(cookie)
+
+    def get_token(self):
+        url = 'https://mp.weixin.qq.com'
+        response = requests.get(url=url, cookies=self.cookies, verify=False)
+        token = re.findall(r'token=(\d+)', str(response.url))[0]
+        print('token:', token)
+        return token
+
+    def get_fakeid(self, mp_id, token):
+        header = {
+            "HOST": "mp.weixin.qq.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:53.0) Gecko/20100101 Firefox/53.0"
+        }
+        query = mp_id
+        query_id = {
+            'action': 'search_biz',
+            'token': token,
+            'lang': 'zh_CN',
+            'f': 'json',
+            'ajax': '1',
+            'random': random.random(),
+            'query': query,
+            'begin': '0',
+            'count': '5',
+        }
+        search_url = 'https://mp.weixin.qq.com/cgi-bin/searchbiz?'
+        search_response = requests.get(search_url, cookies=self.cookies, headers=header, params=query_id, verify=False)
+        lists = search_response.json().get('list')[0]
+        fakeid = lists.get('fakeid')
+        print(search_response.json())
+        print('fakeid:', fakeid)
+        return fakeid
+
+    def get_msg(self, fakeid):
+        params = {
+            'action': 'getmsg',
+            '__biz': fakeid,
+            'f': 'json',
+            'offset': 10,
+            'count': 10,
+            'is_ok': 1,
+            'scene': 124,
+            'uin': 'MTMxOTI3Mjc1',
+            'key': '05eee5e78663c69d88f47c0818a8666d07f12fc80c52ca172928d0d2f7f0bc59ec7fd19cd4b4d4aed825422af5fb0533cefb3abd47cad1705843f61422a0a9ba9e70c3dd8afc9d75ce3d8f50d26b69e7',
+            'pass_ticket': 'P12nGbyGYqcxMn8TPtsskVbRJo%2BH9Rojj4I0SNfyL9I%3D',
+            'wxtoken': '',
+            'appmsg_token': '1022_MIIE0%2BkZ3ICFd%2FeOj_GH9X3jzWdqoH8RvZkHnA~~',
+            'x5': 0,
+            'f': 'json'
+        }
+        i = 0
+        while True:
+            # r = requests.get(self.url, headers=self.headers, params=params, verify=False)
+            r = requests.get(self.url, params=params, verify=False)
+            r_json = r.json()
+            if r_json['errmsg'] == 'ok':
+                msg_list = eval(r_json['general_msg_list'])['list']
+                for msg in msg_list:
+                    try:
+                        app_msg_ext_info = msg['app_msg_ext_info']
+                        print(app_msg_ext_info['title'])
+                        print(app_msg_ext_info['link'])
+                    except KeyError:
+                        print(msg)
+                        continue
+
+            else:
+                print(r_json['errmsg'])
+                print(r_json)
+                break
+            if r_json['can_msg_continue'] != 1:
+                break
+            params['offset'] = r_json['next_offset']
+            i += 1
+            if i == 100:
+                break
+
+
 if __name__ == '__main__':
+    pass
     # api = GsDataAPI()
     # news_list = api.get_msg_info(wx_name='chaping321', posttime_start='2019-07-15', posttime_end='2019-07-28')
 
-    idata_api = IDataApi()
-    idata_api.get_msg_info(uid='chaping321', searchMode='top', beginDate='2018-03-01', endDate='2019-08-14')
+    # idata_api = IDataApi()
+    #idata_api.get_msg_info(uid='chaping321', searchMode='top', beginDate='2018-03-01', endDate='2019-08-14')
+
+    wechat_api = WechatAPI()
+    token = wechat_api.get_token()
+    fakeid = wechat_api.get_fakeid('chaping321', token)
+    wechat_api.get_msg(fakeid)

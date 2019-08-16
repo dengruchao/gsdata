@@ -24,6 +24,9 @@ def search(request):
             params['posttime_start'] = posttime_range[0].strip()
             params['posttime_end'] = posttime_range[1].strip()
         print(params)
+        user = User.objects.get(pk=request.session.get('user_id'))
+        if user.times <= 0:
+            return HttpResponse('次数已用完')
         if request.session.get('user_name') == 'test':
             with open('test.pkl', 'rb') as f:
                 gsdata_api.news_list = pickle.load(f)
@@ -35,7 +38,6 @@ def search(request):
         # for i in range(news_list_len):
         #     gsdata_api.news_list[i]['news_img'] = 'http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=' +\
         #                                           gsdata_api.news_list[i]['news_imgs'].split(';')[0]
-        user = User.objects.get(pk=request.session.get('user_id'))
         user.times -= (len(gsdata_api.news_list)//params.get('limit') + 1)
         user.save()
         return JsonResponse({'times': user.times})
